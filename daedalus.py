@@ -18,7 +18,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
-from model.yolo_model import YOLO
+from model.yolo import YOLO
 import cv2
 import matplotlib.pyplot as plt
 from skimage import io
