@@ -49,10 +49,10 @@ def process_image(img):
     """
     Resize, reduce and expand image.
     # Argument:
-            img: original image.
+      img: original image.
 
     # Returns
-            image: ndarray(64, 64, 3), processed image.
+      image: ndarray(64, 64, 3), processed image.
     """
     image = cv2.resize(img, (416, 416),
                        interpolation=cv2.INTER_CUBIC)
@@ -66,13 +66,13 @@ def process_yolo_output(out, anchors, mask):
     """
     Tensor op: Process output features.
     # Arguments
-            out - tensor (N, S, S, 3, 4+1+80), output feature map of yolo.
-            anchors - List, anchors for box.
-            mask - List, mask for anchors.
+      out - tensor (N, S, S, 3, 4+1+80), output feature map of yolo.
+      anchors - List, anchors for box.
+      mask - List, mask for anchors.
     # Returns
-            boxes - tensor (N, S, S, 3, 4), x,y,w,h for per box.
-            box_confidence - tensor (N, S, S, 3, 1), confidence for per box.
-            box_class_probs - tensor (N, S, S, 3, 80), class probs for per box.
+      boxes - tensor (N, S, S, 3, 4), x,y,w,h for per box.
+      box_confidence - tensor (N, S, S, 3, 1), confidence for per box.
+      box_class_probs - tensor (N, S, S, 3, 80), class probs for per box.
     """
     batchsize, grid_h, grid_w, num_boxes = map(int, out.shape[0:4])
 
@@ -130,9 +130,9 @@ def process_output(raw_outs):
     """
     Tensor op: Extract b, c, and s from raw outputs.
     # Args:
-            raw_outs - Yolo raw output tensor list [(N, 13, 13, 3, 85), (N, 26, 26, 3, 85), (N, 26, 26, 3, 85)].
+      raw_outs - Yolo raw output tensor list [(N, 13, 13, 3, 85), (N, 26, 26, 3, 85), (N, 26, 26, 3, 85)].
     # Returns:
-            boxes - Tensors. (N, 3549, 3, 4), classes: (N, 3549, 3, 1), scores: (N, 3549, 3, 80)
+      boxes - Tensors. (N, 3549, 3, 4), classes: (N, 3549, 3, 1), scores: (N, 3549, 3, 80)
     """
     masks = [[6, 7, 8], [3, 4, 5], [0, 1, 2]]
     anchors = [[10, 13], [16, 30], [33, 23],
@@ -176,8 +176,8 @@ def output_to_pdist(bx, by):
     """
     Tensor op: calculate expectation of box distance given yolo outpput bx & by.
     # Args:
-            bx - YOLOv3 output batch x coordinates in shape (N, 3549, 3, 1)
-            by - YOLOv3 output batch y coordinates in shape (N, 3549, 3, 1)
+      bx - YOLOv3 output batch x coordinates in shape (N, 3549, 3, 1)
+      by - YOLOv3 output batch y coordinates in shape (N, 3549, 3, 1)
     """
     bxby = tf.concat([bx, by], axis=-1)
     bxby = tf.reshape(bxby, [-1, 2])
@@ -188,14 +188,14 @@ def pairwise_IoUs(bs1, bs2):
     """
     Tensor op: Calculate pairwise IoUs given two sets of boxes.
     # Arguments:
-            bs1, bs2 - tensor of boxes in shape (?, 4)
+      bs1, bs2 - tensor of boxes in shape (?, 4)
     # Content:
-            X11,y11------x12,y11     X21,y21------x22,y21
-             |		 	 	|			|		 	 |
-             |		 	 	|			|		 	 |
-            x11,y12-------x12,y12    x21,y22-------x22,y22
+      X11,y11------x12,y11     X21,y21------x22,y21
+        |		 	 	|			|		 	 |
+        |		 	 	|			|		 	 |
+      x11,y12-------x12,y12    x21,y22-------x22,y22
     # Returns:
-            iou - a tensor of the matrix containing pairwise IoUs, in shape (?, ?)
+      iou - a tensor of the matrix containing pairwise IoUs, in shape (?, ?)
     """
     x11, y11, w1, h1 = tf.split(bs1, 4, axis=1)  # (N, 1)
     x21, y21, w2, h2 = tf.split(bs2, 4, axis=1)  # (N, 1)
@@ -222,9 +222,9 @@ def expectation_of_IoUs(boxes):
     """
     Tensor op: Calculate the expectation given all pairwise IoUs.
     # Arguments
-                    boxes - boxes of objects. It takes (?, 4) shaped tensor;
+        boxes - boxes of objects. It takes (?, 4) shaped tensor;
     # Returns
-                    expt - expectation of IoUs of box pairs. Scalar tensor.
+        expt - expectation of IoUs of box pairs. Scalar tensor.
     """
     IoUs = pairwise_IoUs(boxes, boxes)
     expt = tf.reduce_mean(IoUs)
@@ -235,12 +235,12 @@ def expectation_of_IoUs_accross_classes(boxes, box_scores):
     """
     Tensor op: Calculate IoU expectation for IoU expectations from different class.
     Arguments:
-            #boxes - (3549, 3, 4) tensor output from yolo net
-            #box_scores - (N1**2+N2**2+N3**2, 3, 80) tensor
+      #boxes - (3549, 3, 4) tensor output from yolo net
+      #box_scores - (N1**2+N2**2+N3**2, 3, 80) tensor
     Content:
-            #box_classes - (N1**2+N2**2+N3**2, 3, 1) tensor
+      #box_classes - (N1**2+N2**2+N3**2, 3, 1) tensor
     Returns:
-            #expt_over_all_classes - The IoU expectation of box pairs over all classes.
+      #expt_over_all_classes - The IoU expectation of box pairs over all classes.
     """
     box_classes = tf.cast(tf.argmax(box_scores, axis=-1),
                           tf.int32, name='box_classes')
@@ -527,6 +527,7 @@ class Daedalus:
 
 
 if __name__ == '__main__':
+    EXAMPLE_NUM = 10
     sess = tf.InteractiveSession()
     init = tf.global_variables_initializer()
     sess.run(init)
@@ -543,7 +544,7 @@ if __name__ == '__main__':
                 # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
                 X_test.append(image)
                 EXAMPLE_NUM -= 1
-                if EXAMPLE_NUM == 0:
+                if EXAMPLE_NUM <= 0:
                     break
     X_test = np.concatenate(X_test, axis=0)
     attacker = Daedalus(sess, ORACLE)
