@@ -10,7 +10,7 @@ During my research for my bachelor's thesis "Adversarial attacks on road sign de
 
 ## Usage
 
-1. Clone the repository into Google Colab.
+1. Load the notebook from the repository into Google Colab.
 2. Execute the notebook.
 
 ## Branch-specific information
