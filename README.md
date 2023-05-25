@@ -36,3 +36,5 @@ doi={10.1109/TCYB.2020.3041481}}
 ```
 
 The original Daedalus implementation repository - <https://github.com/NeuralSec/Daedalus-attack>
+
+Jason Brownlee of Machine Learning Mastery for providing a script for detecting objects from the raw image in YOLOv3 - <https://machinelearningmastery.com/how-to-perform-object-detection-with-yolov3-in-keras/>
